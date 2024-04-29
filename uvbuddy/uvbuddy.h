@@ -8,16 +8,22 @@
 
 // Constants for pin assignments
 const int ADC_PIN = A0;
-const int SD_CS_PIN = 10;
-const int LED_RED_PIN = 2;
-const int LED_GREEN_PIN = 3;
-const int LED_BLUE_PIN = 4;
-const int LCD_RS_PIN = 7;
-const int LCD_EN_PIN = 8;
-const int LCD_D4_PIN = 9;
-const int LCD_D5_PIN = 11;
-const int LCD_D6_PIN = 12;
-const int LCD_D7_PIN = 13;
+
+// LED pin assignments 
+const int LED_1 = 8   // pin 8
+const int LED_2 = 36  // pin 36
+const int LED_3 = 11  // pin 11
+const int LED_4 = 12  // pin 12
+const int LED_5 = 29  // pin 29
+const int LED_6 = 24  // pin 24
+const int LED_7 = 9   // pin 9
+const int LED_8 = 10  // pin 10 
+const int LED_9 = 33  // pin 33
+const int LED_10 = 16 // pin 16
+const int LED_11 = 23 // pin 23 
+const int LED_12 = 26 // pin 26
+
+
 
 // Function prototypes
 void setupSDCard();
