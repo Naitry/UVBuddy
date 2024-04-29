@@ -1,109 +1,66 @@
 #include "uvb_logger.h"
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600); // ???
+
+  // Initialize I/O
+  pinMode(UV_SENSE, INPUT)      // uv sensor as input 
+  pinMode(SENSE_EN, OUTPUT)     // sensor enable as output 
+  // initialize LEDs 
+
+  // Initialize states 
+  digitalWrite(SENSE_EN, HIGH)  // set sensor enable high 
+  // initialize LEDs 
 
   // Initialize SD card
-  if (!SD.begin(SD_CS_PIN)) {
+  if (!SD.begin(UV_SENSE)) { // if card is not present / can't be initialized 
     Serial.println("Error initializing SD card.");
-    while (true); // Loop indefinitely if SD card initialization fails
+    while (true); // loop indefinitely if SD card initialization fails
   }
+  Serial.println("SD card initialized."); // print to Arduino serial monitor 
 
-  Serial.println("SD card initialized.");
-
-  // Initialize LCD display
-  lcd.begin(16, 2); // Assuming a 16x2 LCD display
-  lcd.setCursor(0, 0);
-  lcd.print("UVB Index:");
-
-  // Initialize RGB LED pins as outputs
-  pinMode(LED_RED_PIN, OUTPUT);
-  pinMode(LED_GREEN_PIN, OUTPUT);
-  pinMode(LED_BLUE_PIN, OUTPUT);
-
-  Serial.println("Ready to log UVB Index data.");
+  // open csv log 
+  // dataFile = SD.open("UV_Log.csv", FILE_WRITE);
+  // if (dataFile) {
+  //   dataFile.println("Timestamp,UV Index");
+  //   dataFile.close();
+  //   Serial.println("Data log created.");
+  // } else {
+  //   Serial.println("Error opening data log!");
+  // }
 }
 
 void loop() {
-  // Read analog voltage from ADC pin
-  int adcValue = analogRead(ADC_PIN);
+  int uvIndex = readUVIndex();  // get UV index 
+  logData(uvIndex);             // log UV index 
 
-  // Convert ADC value to voltage (assuming 5V reference)
-  float voltage = adcValue * (5.0 / 1023.0);
-
-  // Convert voltage to UVB index (example conversion, adjust as needed)
-  float uvbIndex = voltage * 10.0; // Example conversion factor
-
-  // Update LCD display with UVB index and danger rating
-  lcd.setCursor(0, 1);
-  lcd.print(uvbIndex);
-  lcd.print(" UVB");
-
-  // Determine danger rating based on UVB index
-  int dangerRating = getDangerRating(uvbIndex);
-
-  // Light up RGB LED based on danger rating
-  updateRGBLED(dangerRating);
-
-  // Log UVB index data to SD card
-  logData(voltage, uvbIndex, dangerRating);
-
-  // Delay between readings (adjust as needed)
-  delay(1000); // 1 second delay
+  Serial.println("UV Index: " + String(uvIndex));
 }
 
-int getDangerRating(float uvbIndex) {
-  if (uvbIndex < 2.5) {
-    return 1; // Low danger
-  } else if (uvbIndex >= 2.5 && uvbIndex < 5.0) {
-    return 2; // Moderate danger
-  } else if (uvbIndex >= 5.0 && uvbIndex < 7.5) {
-    return 3; // High danger
-  } else {
-    return 4; // Very high danger
-  }
+int readUVIndex() {
+  int uvValue = analogRead(UV_SENSE_PIN);
+  // Convert analog reading to UV index (you'll need to calibrate this based on your sensor's specifications)
+  int uvIndex = map(uvValue, 0, 1023, 0, 15);
+  return uvIndex;
 }
 
-void updateRGBLED(int dangerRating) {
-  // Turn off all LEDs initially
-  digitalWrite(LED_RED_PIN, LOW);
-  digitalWrite(LED_GREEN_PIN, LOW);
-  digitalWrite(LED_BLUE_PIN, LOW);
+// void logData(int uvIndex) {
+//   String dataString = getTimeStamp() + "," + String(uvIndex);
+//   dataFile = SD.open("UV_Log.csv", FILE_WRITE);
+//   if (dataFile) {
+//     dataFile.println(dataString);
+//     dataFile.close();
+//   } else {
+//     Serial.println("Error opening data log!");
+//   }
+// }
 
-  // Set LED color based on danger rating
-  switch (dangerRating) {
-    case 1: // Low danger
-      digitalWrite(LED_GREEN_PIN, HIGH); // Green LED
-      break;
-    case 2: // Moderate danger
-      digitalWrite(LED_GREEN_PIN, HIGH); // Green LED
-      digitalWrite(LED_BLUE_PIN, HIGH);  // Blue LED
-      break;
-    case 3: // High danger
-      digitalWrite(LED_RED_PIN, HIGH);   // Red LED
-      digitalWrite(LED_GREEN_PIN, HIGH); // Green LED
-      break;
-    case 4: // Very high danger
-      digitalWrite(LED_RED_PIN, HIGH);   // Red LED
-      digitalWrite(LED_GREEN_PIN, HIGH); // Green LED
-      digitalWrite(LED_BLUE_PIN, HIGH);  // Blue LED
-      break;
-    default: // Unknown danger rating
-      break;
-  }
-}
+// String getTimeStamp() {
+//   String timeStamp = "";
+//   // Get current time (you may need to add a real-time clock module for accurate timekeeping)
+//   // Example format: "YYYY-MM-DD HH:MM:SS"
+//   timeStamp += "YYYY-MM-DD HH:MM:SS";
+//   return timeStamp;
+// }
 
-void logData(float voltage, float uvbIndex, int dangerRating) {
-  File dataFile = SD.open("datalog.txt", FILE_WRITE);
-  if (dataFile) {
-    dataFile.print("Voltage (V): ");
-    dataFile.print(voltage);
-    dataFile.print("\tUVB Index: ");
-    dataFile.print(uvbIndex);
-    dataFile.print("\tDanger Rating: ");
-    dataFile.println(dangerRating);
-    dataFile.close();
-  } else {
-    Serial.println("Error opening datalog.txt for logging.");
-  }
-}
+// light up LEDs 
