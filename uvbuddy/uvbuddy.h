@@ -31,7 +31,7 @@ const int SD_CLK = 30   // pin 30
 const int SD_MOSI = 37  // pin 37
 const int SD_MISO = 31  // pin 31 
 
-// Function definitions
+// Function definitions (needs updating)
 void setupSDCard();
 void setupLCD();
 int getDangerRating(float uvbIndex);

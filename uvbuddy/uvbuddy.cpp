@@ -17,43 +17,43 @@ void setup() {
     Serial.println("Error initializing SD card.");
     while (true); // loop indefinitely if SD card initialization fails
   }
-  Serial.println("SD card initialized."); // print to Arduino serial monitor 
+  Serial.println("SD card initialized."); // debugging 
 
-  // open csv log 
-  // dataFile = SD.open("UV_Log.csv", FILE_WRITE);
-  // if (dataFile) {
-  //   dataFile.println("Timestamp,UV Index");
-  //   dataFile.close();
-  //   Serial.println("Data log created.");
-  // } else {
-  //   Serial.println("Error opening data log!");
-  // }
+  // Create data log 
+  dataFile = SD.open("UV_Log.csv", FILE_WRITE);
+  if (dataFile) {
+    dataFile.println("Timestamp,UV Index");
+    dataFile.close();
+    Serial.println("Data log created.");        // debugging 
+  } else {
+    Serial.println("Error opening data log!");  // debugging 
+  }
 }
 
 void loop() {
   int uvIndex = readUVIndex();  // get UV index 
   logData(uvIndex);             // log UV index 
 
-  Serial.println("UV Index: " + String(uvIndex));
+  Serial.println("UV Index: " + String(uvIndex)); // debugging 
 }
 
-int readUVIndex() {
-  int uvValue = analogRead(UV_SENSE_PIN);
-  // Convert analog reading to UV index (you'll need to calibrate this based on your sensor's specifications)
-  int uvIndex = map(uvValue, 0, 1023, 0, 15);
-  return uvIndex;
-}
-
-// void logData(int uvIndex) {
-//   String dataString = getTimeStamp() + "," + String(uvIndex);
-//   dataFile = SD.open("UV_Log.csv", FILE_WRITE);
-//   if (dataFile) {
-//     dataFile.println(dataString);
-//     dataFile.close();
-//   } else {
-//     Serial.println("Error opening data log!");
-//   }
+// int readUVIndex() {
+//   int uvValue = analogRead(UV_SENSE_PIN);
+//   // Convert analog reading to UV index (you'll need to calibrate this based on your sensor's specifications)
+//   int uvIndex = map(uvValue, 0, 1023, 0, 15);
+//   return uvIndex;
 // }
+
+void logData(int uvIndex) {
+  String dataString = "timestamp_placeholder," + String(uvIndex);
+  dataFile = SD.open("UV_Log.csv", FILE_WRITE);
+  if (dataFile) {
+    dataFile.println(dataString);
+    dataFile.close();
+  } else {
+    Serial.println("Error opening data log!");  // debugging 
+  }
+}
 
 // String getTimeStamp() {
 //   String timeStamp = "";
