@@ -6,8 +6,10 @@
 #include <SD.h>
 #include <LiquidCrystal.h>
 
-// Constants for pin assignments
-const int ADC_PIN = A0;
+// UV sensor pin assignments 
+// const int 3v3_Regulated = 2 // pin 2   
+const int UV_SENSE = 13     // pin 13
+const int SENSE_EN = 14     // pin 14 
 
 // LED pin assignments 
 const int LED_1 = 8   // pin 8
@@ -23,9 +25,13 @@ const int LED_10 = 16 // pin 16
 const int LED_11 = 23 // pin 23 
 const int LED_12 = 26 // pin 26
 
+// SD card pin assignments 
+// const int 3v3_Regulated = 2 // pin 2 
+const int SD_CLK = 30   // pin 30
+const int SD_MOSI = 37  // pin 37
+const int SD_MISO = 31  // pin 31 
 
-
-// Function prototypes
+// Function definitions
 void setupSDCard();
 void setupLCD();
 int getDangerRating(float uvbIndex);
