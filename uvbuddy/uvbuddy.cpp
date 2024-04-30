@@ -4,37 +4,37 @@ void setup() {
   Serial.begin(9600); // ... 
 
   // Initialize I/O
-  pinMode(UV_SENSE, INPUT)      // input from uv sensor 
-  pinMode(SENSE_EN, OUTPUT)     // output to uv sensor enable 
+  pinMode(UV_SENSE, INPUT);     // input from uv sensor 
+  pinMode(SENSE_EN, OUTPUT);    // output to uv sensor enable 
   // SD card stuff? 
-  pinMode(LED_1, OUTPUT)        // output to all LEDs
-  pinMode(LED_2, OUTPUT)
-  pinMode(LED_3, OUTPUT)
-  pinMode(LED_4, OUTPUT)
-  pinMode(LED_5, OUTPUT)
-  pinMode(LED_6, OUTPUT)
-  pinMode(LED_7, OUTPUT)
-  pinMode(LED_8, OUTPUT)
-  pinMode(LED_9, OUTPUT)
-  pinMode(LED_10, OUTPUT)
-  pinMode(LED_11, OUTPUT)
-  pinMode(LED_12, OUTPUT)
+  pinMode(LED_1, OUTPUT);       // output to all LEDs
+  pinMode(LED_2, OUTPUT);
+  pinMode(LED_3, OUTPUT);
+  pinMode(LED_4, OUTPUT);
+  pinMode(LED_5, OUTPUT);
+  pinMode(LED_6, OUTPUT);
+  pinMode(LED_7, OUTPUT);
+  pinMode(LED_8, OUTPUT);
+  pinMode(LED_9, OUTPUT);
+  pinMode(LED_10, OUTPUT);
+  pinMode(LED_11, OUTPUT);
+  pinMode(LED_12, OUTPUT);
   
   // Initialize states 
-  digitalWrite(SENSE_EN, HIGH)  // set high uv sensor enable
+  digitalWrite(SENSE_EN, HIGH); // set high uv sensor enable
   // SD card stuff? 
-  digitalWrite(LED_1, LOW)      // set low all LEDs 
-  digitalWrite(LED_2, LOW)
-  digitalWrite(LED_3, LOW)
-  digitalWrite(LED_4, LOW)
-  digitalWrite(LED_5, LOW)
-  digitalWrite(LED_6, LOW)
-  digitalWrite(LED_7, LOW)
-  digitalWrite(LED_8, LOW)
-  digitalWrite(LED_9, LOW)
-  digitalWrite(LED_10, LOW)
-  digitalWrite(LED_11, LOW)
-  digitalWrite(LED_12, LOW)
+  digitalWrite(LED_1, LOW);     // set low all LEDs 
+  digitalWrite(LED_2, LOW);
+  digitalWrite(LED_3, LOW);
+  digitalWrite(LED_4, LOW);
+  digitalWrite(LED_5, LOW);
+  digitalWrite(LED_6, LOW);
+  digitalWrite(LED_7, LOW);
+  digitalWrite(LED_8, LOW);
+  digitalWrite(LED_9, LOW);
+  digitalWrite(LED_10, LOW);
+  digitalWrite(LED_11, LOW);
+  digitalWrite(LED_12, LOW);
 
   // Initialize SD card (???)
   if (!SD.begin(UV_SENSE)) { // if card is not present / can't be initialized (???)
@@ -61,19 +61,22 @@ void loop() {
   lightUpLeds(uvIndex);
 
   Serial.println("UV Index: " + String(uvIndex)); // debugging 
-  delay(1000) // replace with data logging interval (...)
+  delay(1000); // replace with data logging interval (...)
 }
 
-// https://learn.sparkfun.com/tutorials/ml8511-uv-sensor-hookup-guide/all
+// -- I don't fully understand this -- 
+// Returns UV intensity value in mW/cm^2
+// Source: https://learn.sparkfun.com/tutorials/ml8511-uv-sensor-hookup-guide/all 
 int readUVIndex() {
   int uvValue = analogRead(UV_SENSE);
-  int refLevel = analogRead(3V3)        // analog read? I/O?
-  uvVoltage / uvValue = 3.3 / refLevel` // solves? 
-  float uvIntensity = mapfloat(uvVoltage, 0.99, 2.8, 0.0, 15.0); // convert the voltage to a UV intensity level
-  return uvIntensity 
+  int refLevel = analogRead(3V3);       
+  uvVoltage / uvValue = 3.3 / refLevel;
+  float uvIntensity = mapfloat(uvVoltage, 0.99, 2.8, 0.0, 15.0); // convert the voltage to a UV intensity (mW/cm^2)
+  return uvIntensity; 
 }
 
-// The Arduino Map function but for floats
+// The Arduino Map function but for floats 
+// Linearly maps value x from input range to output range
 // From: http://forum.arduino.cc/index.php?topic=3922.0
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
 {
@@ -103,173 +106,173 @@ void logData(int uvIndex) {
 // Function to determine which LED(s) to light up based on UV index value
 void lightUpLEDs(int uvIndex) {
   if (uvIndex >= 12) {            // if >= 12, light up 1-12 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, HIGH)
-    digitalWrite(LED_6, HIGH)
-    digitalWrite(LED_7, HIGH)
-    digitalWrite(LED_8, HIGH)
-    digitalWrite(LED_9, HIGH)
-    digitalWrite(LED_10, HIGH)
-    digitalWrite(LED_11, HIGH)
-    digitalWrite(LED_12, HIGH)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, HIGH);
+    digitalWrite(LED_6, HIGH);
+    digitalWrite(LED_7, HIGH);
+    digitalWrite(LED_8, HIGH);
+    digitalWrite(LED_9, HIGH);
+    digitalWrite(LED_10, HIGH);
+    digitalWrite(LED_11, HIGH);
+    digitalWrite(LED_12, HIGH);
   } else if (uvIndex >= 11) {     // if <12 and >=11, light up 1-11 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, HIGH)
-    digitalWrite(LED_6, HIGH)
-    digitalWrite(LED_7, HIGH)
-    digitalWrite(LED_8, HIGH)
-    digitalWrite(LED_9, HIGH)
-    digitalWrite(LED_10, HIGH)
-    digitalWrite(LED_11, HIGH)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, HIGH);
+    digitalWrite(LED_6, HIGH);
+    digitalWrite(LED_7, HIGH);
+    digitalWrite(LED_8, HIGH);
+    digitalWrite(LED_9, HIGH);
+    digitalWrite(LED_10, HIGH);
+    digitalWrite(LED_11, HIGH);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 10) {     // if <11 and >=10, light up 1-10 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, HIGH)
-    digitalWrite(LED_6, HIGH)
-    digitalWrite(LED_7, HIGH)
-    digitalWrite(LED_8, HIGH)
-    digitalWrite(LED_9, HIGH)
-    digitalWrite(LED_10, HIGH)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, HIGH);
+    digitalWrite(LED_6, HIGH);
+    digitalWrite(LED_7, HIGH);
+    digitalWrite(LED_8, HIGH);
+    digitalWrite(LED_9, HIGH);
+    digitalWrite(LED_10, HIGH);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 9) {      // if <10 and >=9, light up 1-9 LEDs 
   digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, HIGH)
-    digitalWrite(LED_6, HIGH)
-    digitalWrite(LED_7, HIGH)
-    digitalWrite(LED_8, HIGH)
-    digitalWrite(LED_9, HIGH)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, HIGH);
+    digitalWrite(LED_6, HIGH);
+    digitalWrite(LED_7, HIGH);
+    digitalWrite(LED_8, HIGH);
+    digitalWrite(LED_9, HIGH);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 8) {      // if <9 and >=8, light up 1-8 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, HIGH)
-    digitalWrite(LED_6, HIGH)
-    digitalWrite(LED_7, HIGH)
-    digitalWrite(LED_8, HIGH)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, HIGH);
+    digitalWrite(LED_6, HIGH);
+    digitalWrite(LED_7, HIGH);
+    digitalWrite(LED_8, HIGH);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 7) {      // if <8 and >=7, light up 1-7 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, HIGH)
-    digitalWrite(LED_6, HIGH)
-    digitalWrite(LED_7, HIGH)
-    digitalWrite(LED_8, LOW)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, HIGH);
+    digitalWrite(LED_6, HIGH);
+    digitalWrite(LED_7, HIGH);
+    digitalWrite(LED_8, LOW);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 6) {      // if <7 and >=6, light up 1-6 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, HIGH)
-    digitalWrite(LED_6, HIGH)
-    digitalWrite(LED_7, LOW)
-    digitalWrite(LED_8, LOW)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, HIGH);
+    digitalWrite(LED_6, HIGH);
+    digitalWrite(LED_7, LOW);
+    digitalWrite(LED_8, LOW);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 5) {      // if <6 and >=5, light up 1-5 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, HIGH)
-    digitalWrite(LED_6, LOW)
-    digitalWrite(LED_7, LOW)
-    digitalWrite(LED_8, LOW)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, HIGH);
+    digitalWrite(LED_6, LOW);
+    digitalWrite(LED_7, LOW);
+    digitalWrite(LED_8, LOW);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 4) {      // if <5 and >=4, light up 1-4 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, HIGH)
-    digitalWrite(LED_5, LOW)
-    digitalWrite(LED_6, LOW)
-    digitalWrite(LED_7, LOW)
-    digitalWrite(LED_8, LOW)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, HIGH);
+    digitalWrite(LED_5, LOW);
+    digitalWrite(LED_6, LOW);
+    digitalWrite(LED_7, LOW);
+    digitalWrite(LED_8, LOW);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 3) {      // if <4 and >=3, light up 1-3 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, HIGH)
-    digitalWrite(LED_4, LOW)
-    digitalWrite(LED_5, LOW)
-    digitalWrite(LED_6, LOW)
-    digitalWrite(LED_7, LOW)
-    digitalWrite(LED_8, LOW)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, HIGH);
+    digitalWrite(LED_4, LOW);
+    digitalWrite(LED_5, LOW);
+    digitalWrite(LED_6, LOW);
+    digitalWrite(LED_7, LOW);
+    digitalWrite(LED_8, LOW);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 2) {      // if <3 and >=2, light up 1-2 LEDs 
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, HIGH)
-    digitalWrite(LED_3, LOW)
-    digitalWrite(LED_4, LOW)
-    digitalWrite(LED_5, LOW)
-    digitalWrite(LED_6, LOW)
-    digitalWrite(LED_7, LOW)
-    digitalWrite(LED_8, LOW)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, HIGH);
+    digitalWrite(LED_3, LOW);
+    digitalWrite(LED_4, LOW);
+    digitalWrite(LED_5, LOW);
+    digitalWrite(LED_6, LOW);
+    digitalWrite(LED_7, LOW);
+    digitalWrite(LED_8, LOW);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else if (uvIndex >= 1) {      // if <2 and >=1, light up 1 LED
-    digitalWrite(LED_1, HIGH)
-    digitalWrite(LED_2, LOW)
-    digitalWrite(LED_3, LOW)
-    digitalWrite(LED_4, LOW)
-    digitalWrite(LED_5, LOW)
-    digitalWrite(LED_6, LOW)
-    digitalWrite(LED_7, LOW)
-    digitalWrite(LED_8, LOW)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_2, LOW);
+    digitalWrite(LED_3, LOW);
+    digitalWrite(LED_4, LOW);
+    digitalWrite(LED_5, LOW);
+    digitalWrite(LED_6, LOW);
+    digitalWrite(LED_7, LOW);
+    digitalWrite(LED_8, LOW);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   } else {                        // if <1, light up 0 LEDs 
-    digitalWrite(LED_1, LOW)
-    digitalWrite(LED_2, LOW)
-    digitalWrite(LED_3, LOW)
-    digitalWrite(LED_4, LOW)
-    digitalWrite(LED_5, LOW)
-    digitalWrite(LED_6, LOW)
-    digitalWrite(LED_7, LOW)
-    digitalWrite(LED_8, LOW)
-    digitalWrite(LED_9, LOW)
-    digitalWrite(LED_10, LOW)
-    digitalWrite(LED_11, LOW)
-    digitalWrite(LED_12, LOW)
+    digitalWrite(LED_1, LOW);
+    digitalWrite(LED_2, LOW);
+    digitalWrite(LED_3, LOW);
+    digitalWrite(LED_4, LOW);
+    digitalWrite(LED_5, LOW);
+    digitalWrite(LED_6, LOW);
+    digitalWrite(LED_7, LOW);
+    digitalWrite(LED_8, LOW);
+    digitalWrite(LED_9, LOW);
+    digitalWrite(LED_10, LOW);
+    digitalWrite(LED_11, LOW);
+    digitalWrite(LED_12, LOW);
   }
 }
