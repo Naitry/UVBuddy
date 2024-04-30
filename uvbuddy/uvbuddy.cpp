@@ -1,20 +1,43 @@
 #include "uvbuddy.h"
 
 void setup() {
-  Serial.begin(9600); // ???
+  Serial.begin(9600); // ... 
 
   // Initialize I/O
-  pinMode(UV_SENSE, INPUT)      // uv sensor as input 
-  pinMode(SENSE_EN, OUTPUT)     // uv sensor enable as output 
-  // initialize LEDs 
-
+  pinMode(UV_SENSE, INPUT)      // input from uv sensor 
+  pinMode(SENSE_EN, OUTPUT)     // output to uv sensor enable 
+  // SD card stuff? 
+  pinMode(LED_1, OUTPUT)        // output to all LEDs
+  pinMode(LED_2, OUTPUT)
+  pinMode(LED_3, OUTPUT)
+  pinMode(LED_4, OUTPUT)
+  pinMode(LED_5, OUTPUT)
+  pinMode(LED_6, OUTPUT)
+  pinMode(LED_7, OUTPUT)
+  pinMode(LED_8, OUTPUT)
+  pinMode(LED_9, OUTPUT)
+  pinMode(LED_10, OUTPUT)
+  pinMode(LED_11, OUTPUT)
+  pinMode(LED_12, OUTPUT)
+  
   // Initialize states 
-  digitalWrite(SENSE_EN, HIGH)  // set uv sensor enable high 
+  digitalWrite(SENSE_EN, HIGH)  // set high uv sensor enable
+  // SD card stuff? 
+  digitalWrite(LED_1, LOW)      // set low all LEDs 
+  digitalWrite(LED_2, LOW)
+  digitalWrite(LED_3, LOW)
+  digitalWrite(LED_4, LOW)
+  digitalWrite(LED_5, LOW)
+  digitalWrite(LED_6, LOW)
+  digitalWrite(LED_7, LOW)
+  digitalWrite(LED_8, LOW)
+  digitalWrite(LED_9, LOW)
+  digitalWrite(LED_10, LOW)
+  digitalWrite(LED_11, LOW)
+  digitalWrite(LED_12, LOW)
 
-  // initialize LEDs 
-
-  // Initialize SD card
-  if (!SD.begin(UV_SENSE)) { // if card is not present / can't be initialized 
+  // Initialize SD card (???)
+  if (!SD.begin(UV_SENSE)) { // if card is not present / can't be initialized
     Serial.println("Error initializing SD card.");
     while (true); // loop indefinitely if SD card initialization fails
   }
