@@ -205,6 +205,8 @@
   },
   "active": "6a9b62d054dde5a3",
   "lastOpenFiles": [
+    "uvbuddy/arduinoSketch/arduinoSketch.ino",
+    "uvbuddy/arduinoSketch",
     "UVBuddyV1_PCB.pdf",
     "UVBuddyV1_Schematic.pdf",
     "PCBV1.pdf",
@@ -214,8 +216,6 @@
     "uvbuddy/uvbuddy.ino",
     "uvbuddy/uvbuddy.h",
     "uvbuddy/uvbuddy.cpp",
-    "uvbuddy",
-    "docs/datasheets/esp32_datasheet_en.pdf",
     "notes.md",
     "Pasted image 20240414234718.png"
   ]
