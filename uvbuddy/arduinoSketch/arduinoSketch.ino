@@ -25,9 +25,14 @@ const int LED_12 = 4;   // gpio 4
 
 // SD card pin assignments 
 const int SD_CLK = 18;  // gpio 18
-const int SD_CS = 20; // gpio 19 
+const int SD_CS = 20;   // gpio 19 
 const int SD_MOSI = 23; // gpio 23
 const int SD_MISO = 19; // gpio 19 
+
+// Data file in global scope
+File dataFile;
+
+#endif
 
 void setup() 
 {
@@ -49,7 +54,6 @@ void setup()
   pinMode(LED_12, OUTPUT);
   
   // Initialize states 
-  digitalWrite(SENSE_EN, HIGH); // set high uv sensor enable
   digitalWrite(LED_1, LOW);     // set low all LEDs 
   digitalWrite(LED_2, LOW);
   digitalWrite(LED_3, LOW);
@@ -86,25 +90,23 @@ void setup()
 }
 
 // Main loop to read UV index, log it, and light up LEDs 
-void loop() 
-{
-  int uvIndex = readUVIndex();  // read and calculate UV index 
-  logData(uvIndex);             // log UV index in csv file 
-  lightUpLeds(uvIndex);
+void loop() {
+  float uvIndex = readUVIndex();
+  logData(uvIndex);               
+  lightUpLEDs(uvIndex);  // Ensure the correct function name is called here
 
-  Serial.println("UV Index: " + String(uvIndex)); // debugging 
-  delay(1000); // replace with data logging interval (...)
+  Serial.println("UV Index: " + String(uvIndex)); 
+  delay(1000);
 }
+
 
 // -- I don't fully understand this -- 
 // Returns UV intensity value in mW/cm^2
 // Source: https://learn.sparkfun.com/tutorials/ml8511-uv-sensor-hookup-guide/all 
-int readUVIndex() 
+float readUVIndex() 
 {
-  int uvValue = analogRead(UV_SENSE);
-  int refLevel = analogRead(REF); //(????????)
-  uvVoltage / uvValue = 3.3 / refLevel;
-  float uvIntensity = mapfloat(uvVoltage, 0.99, 2.8, 0.0, 15.0); // convert the voltage to a UV intensity (mW/cm^2)
+  float uvValue = analogRead(UV_SENSE);
+  float uvIntensity = mapfloat(uvValue, 0.99, 2.8, 0.0, 15.0); // convert the voltage to a UV intensity (mW/cm^2)
   return uvIntensity; 
 }
 
@@ -143,8 +145,8 @@ void logData(int uvIndex)
 // Function to determine which LED(s) to light up based on UV index value
 void lightUpLEDs(int uvIndex) 
 {
-  if (uvIndex >= 12) 
-  {            // if >= 12, light up 1-12 LEDs 
+  if (uvIndex >= 12)        // if >= 12, light up 1-12 LEDs 
+  {           
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -158,8 +160,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, HIGH);
     digitalWrite(LED_12, HIGH);
   } 
-  else if (uvIndex >= 11) 
-  {     // if <12 and >=11, light up 1-11 LEDs 
+  else if (uvIndex >= 11)   // if <12 and >=11, light up 1-11 LEDs 
+  {     
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -173,8 +175,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, HIGH);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 10) 
-  {     // if <11 and >=10, light up 1-10 LEDs 
+  else if (uvIndex >= 10)   // if <11 and >=10, light up 1-10 LEDs 
+  {     
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -188,9 +190,9 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 9) 
-  {      // if <10 and >=9, light up 1-9 LEDs 
-  digitalWrite(LED_1, HIGH)
+  else if (uvIndex >= 9)    // if <10 and >=9, light up 1-9 LEDs 
+  {      
+    digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
     digitalWrite(LED_4, HIGH);
@@ -203,8 +205,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 8) 
-  {      // if <9 and >=8, light up 1-8 LEDs 
+  else if (uvIndex >= 8)    // if <9 and >=8, light up 1-8 LEDs 
+  {      
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -218,8 +220,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 7) 
-  {      // if <8 and >=7, light up 1-7 LEDs 
+  else if (uvIndex >= 7)     // if <8 and >=7, light up 1-7 LEDs 
+  {      
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -233,8 +235,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 6) 
-  {      // if <7 and >=6, light up 1-6 LEDs 
+  else if (uvIndex >= 6)    // if <7 and >=6, light up 1-6 LEDs 
+  {      
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -248,8 +250,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 5) 
-  {      // if <6 and >=5, light up 1-5 LEDs 
+  else if (uvIndex >= 5)    // if <6 and >=5, light up 1-5 LEDs 
+  {      
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -263,8 +265,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 4) 
-  {      // if <5 and >=4, light up 1-4 LEDs 
+  else if (uvIndex >= 4)    // if <5 and >=4, light up 1-4 LEDs 
+  {      
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -278,8 +280,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 3) 
-  {      // if <4 and >=3, light up 1-3 LEDs 
+  else if (uvIndex >= 3)    // if <4 and >=3, light up 1-3 LEDs 
+  {      
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, HIGH);
@@ -293,8 +295,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else if (uvIndex >= 2) 
-  {      // if <3 and >=2, light up 1-2 LEDs 
+  else if (uvIndex >= 2)    // if <3 and >=2, light up 1-2 LEDs 
+  {                         
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, HIGH);
     digitalWrite(LED_3, LOW);
@@ -308,8 +310,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   }
-  else if (uvIndex >= 1) 
-  {      // if <2 and >=1, light up 1 LED
+  else if (uvIndex >= 1)    // if <2 and >=1, light up 1 LED
+  {      
     digitalWrite(LED_1, HIGH);
     digitalWrite(LED_2, LOW);
     digitalWrite(LED_3, LOW);
@@ -323,8 +325,8 @@ void lightUpLEDs(int uvIndex)
     digitalWrite(LED_11, LOW);
     digitalWrite(LED_12, LOW);
   } 
-  else 
-  {                        // if <1, light up 0 LEDs 
+  else                      // if <1, light up 0 LEDs 
+  {                         
     digitalWrite(LED_1, LOW);
     digitalWrite(LED_2, LOW);
     digitalWrite(LED_3, LOW);
