@@ -205,6 +205,8 @@
   },
   "active": "6a9b62d054dde5a3",
   "lastOpenFiles": [
+    "uvbuddy/SDMMC_Test/SDMMC_Test.ino",
+    "uvbuddy/SDMMC_Test",
     "uvbuddy/SD_Test/SD_Test.ino",
     "uvbuddy/SD_Test",
     "uvbuddy/arduinoSketch/arduinoSketch.ino",
@@ -214,8 +216,6 @@
     "PCBV1.pdf",
     "SchemV1.pdf",
     "UVBuddyV1_Schematic (2).pdf",
-    "UVBuddyV1_Schematic (1).pdf",
-    "uvbuddy/uvbuddy.ino",
     "notes.md",
     "Pasted image 20240414234718.png"
   ]
