@@ -2,9 +2,26 @@
 #define UVB_BUDDY
 
 #include <Arduino.h>
-#include <SPI.h>
-#include <SD.h>
-#include <FS.h>
+#include "FS.h"
+#include "SD_MMC.h"
+
+#define ONE_BIT_MODE true
+
+// forward function declarations
+
+// LED functions
+void lightUpLEDs(int uvIndex);
+
+// SD card functions
+void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
+void createDir(fs::FS &fs, const char * path);
+void removeDir(fs::FS &fs, const char * path);
+void readFile(fs::FS &fs, const char * path);
+void writeFile(fs::FS &fs, const char * path, const char * message);
+void appendFile(fs::FS &fs, const char * path, const char * message);
+void renameFile(fs::FS &fs, const char * path1, const char * path2);
+void deleteFile(fs::FS &fs, const char * path);
+
 
 // UV sensor pin assignments   
 const int UV_SENSE = 36;// gpio 14
@@ -23,16 +40,10 @@ const int LED_9 = 21;   // gpio 21
 const int LED_10 = 9;  // gpio 13
 const int LED_11 = 19;  // gpio 15 
 const int LED_12 = 4;   // gpio 4
+const int ledPins[12] = {LED_1, LED_2, LED_3, LED_4, LED_5, LED_6,
+                         LED_7, LED_8, LED_9, LED_10, LED_11, LED_12};
 
-// SD card pin assignments 
-const int SD_CLK = 18;  // gpio 18
-const int SD_CS = 5;    // gpio 5 
-const int SD_MOSI = 23; // gpio 23
-const int SD_MISO = 19; // gpio 19 
-
-// Data file in global scope
-File dataFile;
-
+const char* outFile = "/data.csv"; 
 #endif
 
 void setup() 
@@ -41,59 +52,43 @@ void setup()
 
   // Initialize I/O
   pinMode(UV_SENSE, INPUT);     // input from uv sensor 
-
-  pinMode(LED_1, OUTPUT);       // output to all LEDs
-  pinMode(LED_2, OUTPUT);
-  pinMode(LED_3, OUTPUT);
-  pinMode(LED_4, OUTPUT);
-  pinMode(LED_5, OUTPUT);
-  pinMode(LED_6, OUTPUT);
-
-  pinMode(LED_7, OUTPUT);
-  pinMode(LED_8, OUTPUT);
-  pinMode(LED_9, OUTPUT);
-  pinMode(LED_10, OUTPUT);
-  pinMode(LED_11, OUTPUT);
-  pinMode(LED_12, OUTPUT);
   
-  pinMode(SD_CS, OUTPUT); // Ensure CS pin is set to OUTPUT
-  digitalWrite(SD_CS, HIGH); // Deselect the SD card
+  // Set pinmodes for SD communication
+  pinMode(2, INPUT_PULLUP);
+  pinMode(4, INPUT_PULLUP);
+  pinMode(12, INPUT_PULLUP);
+  pinMode(13, INPUT_PULLUP);
+  pinMode(15, INPUT_PULLUP);
   
-  // Initialize states 
-  digitalWrite(LED_1, LOW);     // set low all LEDs 
-  digitalWrite(LED_2, LOW);
-  digitalWrite(LED_3, LOW);
-  digitalWrite(LED_4, LOW);
-  digitalWrite(LED_5, LOW);
-  digitalWrite(LED_6, LOW);
-  
-  digitalWrite(LED_7, LOW);
-  digitalWrite(LED_8, LOW);
-  digitalWrite(LED_9, LOW);
-  digitalWrite(LED_10, LOW);
-  digitalWrite(LED_11, LOW);
-  digitalWrite(LED_12, LOW);
-
-  // Initialize SD card
-  while (!SD.begin(SD_CS)) 
+  // Loop through the array and set each LED's pinmode and initial state to low
+  for (int i = 0; i < 12; i++) 
   {
-    Serial.println("Error initializing SD card.");
-    delay(500); // Delay before retrying
+      pinMode(ledPins[i], OUTPUT);
+      digitalWrite(ledPins[i], LOW);
   }
-  Serial.println("SD card initialized."); // debugging 
 
-  // Create data log 
-  dataFile = SD.open("UV_Log.csv", FILE_WRITE);
-  if (dataFile) 
+  if(!SD_MMC.begin("/sdcard",
+                   ONE_BIT_MODE))
   {
-    dataFile.println("Timestamp,UV Index");
-    dataFile.close();
-    Serial.println("Data log created.");        // debugging 
-  } 
-  else 
-  {
-    Serial.println("Error opening data log!");  // debugging 
+      Serial.println("Card Mount Failed");
+      return;
   }
+  uint8_t cardType = SD_MMC.cardType();
+  
+  if(cardType == CARD_NONE)
+  {
+      Serial.println("No SD_MMC card attached");
+      return;
+  }
+  
+  Serial.print("SD_MMC Card Type: ");
+  if (cardType == CARD_MMC) { Serial.println("MMC"); } 
+  else if (cardType == CARD_SD) { Serial.println("SDSC"); } 
+  else if (cardType == CARD_SDHC) { Serial.println("SDHC"); } 
+  else { Serial.println("UNKNOWN"); }
+
+  uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
+  Serial.printf("SD_MMC Card Size: %lluMB\n", cardSize);
 }
 
 // Main loop to read UV index, log it, and light up LEDs 
@@ -126,22 +121,114 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 
 // Function to log a timestamp and UV index to a csv file 
-void logData(int uvIndex) 
+void logData(float uvIndex) 
 {
-  String dataString = "timestamp_placeholder," + String(uvIndex);
-  dataFile = SD.open("UV_Log.csv", FILE_WRITE);
-  if (dataFile) 
+  String dataString = "timestamp_placeholder," + String(uvIndex)+ "\n";
+  appendFile(SD_MMC, outFile, dataString.c_str());
+}
+
+
+void listDir(fs::FS &fs, const char * dirname, uint8_t levels)
+{
+  Serial.printf("Listing directory: %s\n", dirname);
+  
+  File root = fs.open(dirname);
+  if (!root)
   {
-    dataFile.println(dataString);
-    dataFile.close();
-  } 
-  else 
+    Serial.println("Failed to open directory");
+    return;
+  }
+  if (!root.isDirectory())
   {
-    Serial.println("Error opening data log!");  // debugging 
+    Serial.println("Not a directory");
+    return;
+  }
+  
+  File file = root.openNextFile();
+  while (file)
+  {
+    if (file.isDirectory())
+    {
+      Serial.print("  DIR : ");
+      Serial.println(file.name());
+      if (levels) { listDir(fs, file.path(), levels -1); }
+    } 
+    else 
+    {
+      Serial.print("  FILE: ");
+      Serial.print(file.name());
+      Serial.print("  SIZE: ");
+      Serial.println(file.size());
+    }
+    file = root.openNextFile();
   }
 }
 
-// String getTimeStamp() {
+void createDir(fs::FS &fs, const char * path)
+{
+  Serial.printf("Creating Dir: %s\n", path);
+  if (fs.mkdir(path)) { Serial.println("Dir created"); } 
+  else { Serial.println("mkdir failed"); }
+}
+
+void removeDir(fs::FS &fs, const char * path)
+{
+  Serial.printf("Removing Dir: %s\n", path);
+  if (fs.rmdir(path)) { Serial.println("Dir removed"); } 
+  else { Serial.println("rmdir failed"); }
+}
+
+void readFile(fs::FS &fs, const char * path)
+{
+  Serial.printf("Reading file: %s\n", path);
+
+  File file = fs.open(path);
+  if (!file)
+  {
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+  
+  Serial.print("Read from file: ");
+  while (file.available()) { Serial.write(file.read()); }
+}
+
+void writeFile(fs::FS &fs, const char * path, const char * message)
+{
+  Serial.printf("Writing file: %s\n", path);
+
+  File file = fs.open(path, FILE_WRITE);
+  if (!file) { Serial.println("Failed to open file for writing"); }
+  else if (file.print(message)) { Serial.println("File written"); } 
+  else { Serial.println("Write failed"); }
+}
+
+void appendFile(fs::FS &fs, const char * path, const char * message)
+{
+  Serial.printf("Appending to file: %s\n", path);
+
+  File file = fs.open(path, FILE_APPEND);
+  if (!file) { Serial.println("Failed to open file for appending"); }
+  else if (file.print(message)) { Serial.println("Message appended"); } 
+  else { Serial.println("Append failed"); }
+}
+
+void renameFile(fs::FS &fs, const char * path1, const char * path2)
+{
+  Serial.printf("Renaming file %s to %s\n", path1, path2);
+  if (fs.rename(path1, path2)) { Serial.println("File renamed"); } 
+  else { Serial.println("Rename failed"); }
+}
+
+void deleteFile(fs::FS &fs, const char * path)
+{
+  Serial.printf("Deleting file: %s\n", path);
+  if (fs.remove(path)) { Serial.println("File deleted"); } 
+  else { Serial.println("Delete failed"); }
+}
+
+// String getTimeStamp() 
+//{
 //   String timeStamp = "";
 //   // Get current time (you may need to add a real-time clock module for accurate timekeeping)
 //   // Example format: "YYYY-MM-DD HH:MM:SS"
@@ -149,202 +236,15 @@ void logData(int uvIndex)
 //   return timeStamp;
 // }
 
-// Function to determine which LED(s) to light up based on UV index value
+/**
+ * @brief Activates a number of LEDs corresponding to the UV index level.
+ * @param uvIndex The current UV index, determining how many LEDs to activate.
+ */
 void lightUpLEDs(int uvIndex) 
 {
-  if (uvIndex >= 12)        // if >= 12, light up 1-12 LEDs 
-  {           
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, HIGH);
-    digitalWrite(LED_6, HIGH);
-    digitalWrite(LED_7, HIGH);
-    digitalWrite(LED_8, HIGH);
-    digitalWrite(LED_9, HIGH);
-    digitalWrite(LED_10, HIGH);
-    digitalWrite(LED_11, HIGH);
-    digitalWrite(LED_12, HIGH);
-  } 
-  else if (uvIndex >= 11)   // if <12 and >=11, light up 1-11 LEDs 
-  {     
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, HIGH);
-    digitalWrite(LED_6, HIGH);
-    digitalWrite(LED_7, HIGH);
-    digitalWrite(LED_8, HIGH);
-    digitalWrite(LED_9, HIGH);
-    digitalWrite(LED_10, HIGH);
-    digitalWrite(LED_11, HIGH);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 10)   // if <11 and >=10, light up 1-10 LEDs 
-  {     
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, HIGH);
-    digitalWrite(LED_6, HIGH);
-    digitalWrite(LED_7, HIGH);
-    digitalWrite(LED_8, HIGH);
-    digitalWrite(LED_9, HIGH);
-    digitalWrite(LED_10, HIGH);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 9)    // if <10 and >=9, light up 1-9 LEDs 
-  {      
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, HIGH);
-    digitalWrite(LED_6, HIGH);
-    digitalWrite(LED_7, HIGH);
-    digitalWrite(LED_8, HIGH);
-    digitalWrite(LED_9, HIGH);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 8)    // if <9 and >=8, light up 1-8 LEDs 
-  {      
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, HIGH);
-    digitalWrite(LED_6, HIGH);
-    digitalWrite(LED_7, HIGH);
-    digitalWrite(LED_8, HIGH);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 7)     // if <8 and >=7, light up 1-7 LEDs 
-  {      
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, HIGH);
-    digitalWrite(LED_6, HIGH);
-    digitalWrite(LED_7, HIGH);
-    digitalWrite(LED_8, LOW);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 6)    // if <7 and >=6, light up 1-6 LEDs 
-  {      
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, HIGH);
-    digitalWrite(LED_6, HIGH);
-    digitalWrite(LED_7, LOW);
-    digitalWrite(LED_8, LOW);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 5)    // if <6 and >=5, light up 1-5 LEDs 
-  {      
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, HIGH);
-    digitalWrite(LED_6, LOW);
-    digitalWrite(LED_7, LOW);
-    digitalWrite(LED_8, LOW);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 4)    // if <5 and >=4, light up 1-4 LEDs 
-  {      
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, HIGH);
-    digitalWrite(LED_5, LOW);
-    digitalWrite(LED_6, LOW);
-    digitalWrite(LED_7, LOW);
-    digitalWrite(LED_8, LOW);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 3)    // if <4 and >=3, light up 1-3 LEDs 
-  {      
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, HIGH);
-    digitalWrite(LED_4, LOW);
-    digitalWrite(LED_5, LOW);
-    digitalWrite(LED_6, LOW);
-    digitalWrite(LED_7, LOW);
-    digitalWrite(LED_8, LOW);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else if (uvIndex >= 2)    // if <3 and >=2, light up 1-2 LEDs 
-  {                         
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, HIGH);
-    digitalWrite(LED_3, LOW);
-    digitalWrite(LED_4, LOW);
-    digitalWrite(LED_5, LOW);
-    digitalWrite(LED_6, LOW);
-    digitalWrite(LED_7, LOW);
-    digitalWrite(LED_8, LOW);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  }
-  else if (uvIndex >= 1)    // if <2 and >=1, light up 1 LED
-  {      
-    digitalWrite(LED_1, HIGH);
-    digitalWrite(LED_2, LOW);
-    digitalWrite(LED_3, LOW);
-    digitalWrite(LED_4, LOW);
-    digitalWrite(LED_5, LOW);
-    digitalWrite(LED_6, LOW);
-    digitalWrite(LED_7, LOW);
-    digitalWrite(LED_8, LOW);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  } 
-  else                      // if <1, light up 0 LEDs 
-  {                         
-    digitalWrite(LED_1, LOW);
-    digitalWrite(LED_2, LOW);
-    digitalWrite(LED_3, LOW);
-    digitalWrite(LED_4, LOW);
-    digitalWrite(LED_5, LOW);
-    digitalWrite(LED_6, LOW);
-    digitalWrite(LED_7, LOW);
-    digitalWrite(LED_8, LOW);
-    digitalWrite(LED_9, LOW);
-    digitalWrite(LED_10, LOW);
-    digitalWrite(LED_11, LOW);
-    digitalWrite(LED_12, LOW);
-  }
+    // Loop through the array and set each LED's state based on the UV index
+    for (int i = 0; i < 12; i++) 
+    {
+        digitalWrite(ledPins[i], i < uvIndex ? HIGH : LOW);
+    }
 }
