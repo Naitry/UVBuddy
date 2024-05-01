@@ -97,9 +97,9 @@ void loop()
   float uvIndex = readUVIndex();
   logData(uvIndex);               
   lightUpLEDs(uvIndex);  
-
+  Serial.println("UV Index: ");
   Serial.println("UV Index: " + String(uvIndex)); // debugging
-  delay(1000);
+  delay(500);
 }
 
 // -- I don't fully understand this -- 
