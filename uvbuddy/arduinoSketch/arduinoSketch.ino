@@ -1,31 +1,32 @@
-#ifndef UVB_BUDDY_H
-#define UVB_BUDDY_H
+#ifndef UVB_BUDDY
+#define UVB_BUDDY
 
 #include <Arduino.h>
 #include <SPI.h>
 #include <SD.h>
+#include <FS.h>
 
 // UV sensor pin assignments   
-const int UV_SENSE = 14;// gpio 14
+const int UV_SENSE = 36;// gpio 14
 
 // LED pin assignments 
 const int LED_1 = 32;   // gpio 32
 const int LED_2 = 22;   // gpio 22
 const int LED_3 = 26;   // gpio 26
 const int LED_4 = 27;   // gpio 27
-const int LED_5 = 5;    // gpio 5
-const int LED_6 = 2;    // gpio 2
+const int LED_5 = 5;    // gpio 17
+const int LED_6 = 0;    // gpio 2
 
 const int LED_7 = 33;   // gpio 33
 const int LED_8 = 25;   // gpio 25 
 const int LED_9 = 21;   // gpio 21
-const int LED_10 = 13;  // gpio 13
-const int LED_11 = 15;  // gpio 15 
+const int LED_10 = 9;  // gpio 13
+const int LED_11 = 19;  // gpio 15 
 const int LED_12 = 4;   // gpio 4
 
 // SD card pin assignments 
 const int SD_CLK = 18;  // gpio 18
-const int SD_CS = 20;   // gpio 19 
+const int SD_CS = 5;    // gpio 5 
 const int SD_MOSI = 23; // gpio 23
 const int SD_MISO = 19; // gpio 19 
 
@@ -40,18 +41,23 @@ void setup()
 
   // Initialize I/O
   pinMode(UV_SENSE, INPUT);     // input from uv sensor 
+
   pinMode(LED_1, OUTPUT);       // output to all LEDs
   pinMode(LED_2, OUTPUT);
   pinMode(LED_3, OUTPUT);
   pinMode(LED_4, OUTPUT);
   pinMode(LED_5, OUTPUT);
   pinMode(LED_6, OUTPUT);
+
   pinMode(LED_7, OUTPUT);
   pinMode(LED_8, OUTPUT);
   pinMode(LED_9, OUTPUT);
   pinMode(LED_10, OUTPUT);
   pinMode(LED_11, OUTPUT);
   pinMode(LED_12, OUTPUT);
+  
+  pinMode(SD_CS, OUTPUT); // Ensure CS pin is set to OUTPUT
+  digitalWrite(SD_CS, HIGH); // Deselect the SD card
   
   // Initialize states 
   digitalWrite(LED_1, LOW);     // set low all LEDs 
@@ -60,6 +66,7 @@ void setup()
   digitalWrite(LED_4, LOW);
   digitalWrite(LED_5, LOW);
   digitalWrite(LED_6, LOW);
+  
   digitalWrite(LED_7, LOW);
   digitalWrite(LED_8, LOW);
   digitalWrite(LED_9, LOW);
@@ -68,10 +75,10 @@ void setup()
   digitalWrite(LED_12, LOW);
 
   // Initialize SD card
-  if (!SD.begin(SD_CS)) 
+  while (!SD.begin(SD_CS)) 
   {
     Serial.println("Error initializing SD card.");
-    while (true); // loop indefinitely if SD card initialization fails
+    delay(500); // Delay before retrying
   }
   Serial.println("SD card initialized."); // debugging 
 
@@ -90,15 +97,15 @@ void setup()
 }
 
 // Main loop to read UV index, log it, and light up LEDs 
-void loop() {
+void loop() 
+{
   float uvIndex = readUVIndex();
   logData(uvIndex);               
-  lightUpLEDs(uvIndex);  // Ensure the correct function name is called here
+  lightUpLEDs(uvIndex);  
 
-  Serial.println("UV Index: " + String(uvIndex)); 
+  Serial.println("UV Index: " + String(uvIndex)); // debugging
   delay(1000);
 }
-
 
 // -- I don't fully understand this -- 
 // Returns UV intensity value in mW/cm^2
