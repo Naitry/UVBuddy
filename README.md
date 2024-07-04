@@ -21,6 +21,7 @@ The UVBuddy is a personal UV broad spectrum sensor designed to give users real-t
 (needs updating) 
 
 ## Developer Documentation 
+(COMPLETE)
 
 ## Results 
 (needs updating) See [Presentation](#presentation). 
@@ -31,3 +32,4 @@ The UVBuddy is a personal UV broad spectrum sensor designed to give users real-t
 ![Picture1](https://github.com/Naitry/UVBuddy/assets/124198528/778416e9-3bb4-41ad-8dfc-6aa972a2244e)
 
 ## Next Steps 
+(COMPLETE)
