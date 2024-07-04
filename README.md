@@ -25,5 +25,6 @@ Something. [Next Steps](#next-steps) are listed below.
 
 ## Presentation
 - [Youtube Video](https://www.youtube.com/watch?v=eEAE1UoE34o&t=2s)
+![Picture1](https://github.com/Naitry/UVBuddy/assets/124198528/778416e9-3bb4-41ad-8dfc-6aa972a2244e)
 
 ## Next Steps 
