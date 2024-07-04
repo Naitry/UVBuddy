@@ -12,7 +12,7 @@
 - [Next Steps](#next-steps) 
 
 ## Project Status 
-Something. [Next Steps](#next-steps) are listed below.
+This project achieved minimum viable results. [Next Steps](#next-steps) are listed below.
 
 ## Overview 
 The UVBuddy is a personal UV broad spectrum sensor designed to give users real-time feedback about the UV light they are being exposed to. The exposure data will be provided through LEDs as well as collected over time into an output file.
