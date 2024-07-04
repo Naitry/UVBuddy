@@ -5,7 +5,7 @@
 ## Table of Contents
 - [Project Status](#project-status)
 - [Overview](#overview)
-<!--[User Documentation](#user-documentation)-->
+- [User Documentation](#user-documentation)
 - [Developer Documentation](#developer-documentation)
 - [Results](#results) 
 - [Presentation](#presentation)
