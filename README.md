@@ -33,7 +33,7 @@ void loop()
 }
 ```
 
-The UV index is calculated by reading the voltage from the [ML8511 UV sensor's](https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/ML8511_3-8-13.pdf) analog pin. Then, the voltage value is linearly mapped to the correct UV index based off the [graph] in the sensor's datasheet.
+The UV index is calculated by reading the voltage from the [ML8511 UV sensor's](https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/ML8511_3-8-13.pdf) analog pin. Then, the voltage value is linearly mapped to the correct UV index based off the transfer function in the sensor's datasheet.
 
 ![image](https://github.com/Naitry/UVBuddy/assets/124198528/a170f490-aa2f-482a-b860-27515e62f609)
 
