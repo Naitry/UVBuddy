@@ -19,7 +19,7 @@ The UVBuddy is a personal UV broad spectrum sensor designed to give users real-t
 ## Developer Documentation 
 The main logic for UVBuddy is located in the [`uvbuddy/arduinoSketch/main.io`](https://github.com/Naitry/UVBuddy/blob/main/uvbuddy/arduinoSketch/main.ino) file. 
 
-'''
+'''c
 
 // Main loop to read UV index, log it, and light up LEDs 
 void loop() 
