@@ -33,11 +33,11 @@ void loop()
 }
 ```
 
-The UV index is calculated by reading the voltage from the [sensor's] analog pin. Then, the voltage value linearly mapped to the correct UV index based off the graph in the sensor's datasheet.
+The UV index is calculated by reading the voltage from the [sensor's] analog pin. Then, the voltage value is linearly mapped to the correct UV index based off the [graph] in the sensor's datasheet.
 
 ![image](https://github.com/Naitry/UVBuddy/assets/124198528/a170f490-aa2f-482a-b860-27515e62f609)
 
-The data of UV indexes at every 30 second time stepped is logged in an [SD card] using the [library].
+The UV index at each 30 second time-step is logged in an [SD card] using the [library].
 
 ## Results 
 (needs updating) See [Presentation](#presentation). 
