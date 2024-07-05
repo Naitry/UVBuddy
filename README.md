@@ -37,7 +37,7 @@ The UV index is calculated by reading the voltage from the [sensor's] analog pin
 
 ![image](https://github.com/Naitry/UVBuddy/assets/124198528/a170f490-aa2f-482a-b860-27515e62f609)
 
-The UV index at each 30 second time-step is logged in an [SD card] using the [library].
+The UV index at each 30 second time-step is logged in an [SD card] using the [[Espressif]](https://github.com/espressif/arduino-esp32).
 
 ## Results 
 (needs updating) See [Presentation](#presentation). 
