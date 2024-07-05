@@ -109,8 +109,7 @@ void loop()
   float uvIndex = readUVIndex();
   if(count % 300 == 0) { logData(count / 300, uvIndex); }
   lightUpLEDs(uvIndex);
-  // serial debugging
-  Serial.println("UV Index: " + String(uvIndex));
+  Serial.println("UV Index: " + String(uvIndex));  // serial debugging
   delay(10);
   count++;
 }
