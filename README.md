@@ -17,7 +17,27 @@ This project achieved minimum viable results. [Next Steps](#next-steps) are list
 The UVBuddy is a personal UV broad spectrum sensor designed to give users real-time feedback about the UV light they are being exposed to. The exposure data will be provided through LEDs as well as collected over time into an output file.
 
 ## Developer Documentation 
--- TO BE COMPLETED --
+The main logic for UVBuddy is located in the [`uvbuddy/arduinoSketch/main.io`](https://github.com/Naitry/UVBuddy/blob/main/uvbuddy/arduinoSketch/main.ino) file. 
+
+Here is the main loop:
+'''
+// Main loop to read UV index, log it, and light up LEDs 
+void loop() 
+{
+  float uvIndex = readUVIndex();
+  if(count % 300 == 0) { logData(count / 300, uvIndex); }
+  lightUpLEDs(uvIndex);
+  Serial.println("UV Index: " + String(uvIndex));  // serial debugging
+  delay(10);
+  count++;
+}
+'''
+
+The voltage is read through an analog pin. The voltage is then mapped with a tranfer function acording to the data sheet. 
+
+[ insert image of transfer function ]
+
+The data is then logged on an SD card using the SD library [link library here]. 
 
 ## Results 
 (needs updating) See [Presentation](#presentation). 
