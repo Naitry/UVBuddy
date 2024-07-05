@@ -5,7 +5,6 @@
 ## Table of Contents
 - [Project Status](#project-status)
 - [Overview](#overview)
-- [User Documentation](#user-documentation)
 - [Developer Documentation](#developer-documentation)
 - [Results](#results) 
 - [Presentation](#presentation)
@@ -29,4 +28,7 @@ The UVBuddy is a personal UV broad spectrum sensor designed to give users real-t
 ![Picture1](https://github.com/Naitry/UVBuddy/assets/124198528/778416e9-3bb4-41ad-8dfc-6aa972a2244e)
 
 ## Next Steps 
--- TO BE COMPLETED --
+- catalogue total UV exposure over a specific time period
+- bluetooth integration for recording data 
+- develop a wearable prototype
+- develop an app for easy data access 
