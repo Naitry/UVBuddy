@@ -19,8 +19,8 @@ The UVBuddy is a personal UV broad spectrum sensor designed to give users real-t
 ## Developer Documentation 
 The main logic for UVBuddy is located in the [`uvbuddy/arduinoSketch/main.io`](https://github.com/Naitry/UVBuddy/blob/main/uvbuddy/arduinoSketch/main.ino) file. 
 
-'''cpp
-// Main loop to read UV index, log it, and light up LEDs 
+Every 30 seconds, the main loop reads the UV index from the sensor, logs it in an SD card, and lights up the corresponding LEDs. 
+'''
 void loop() 
 {
   float uvIndex = readUVIndex();
@@ -32,11 +32,10 @@ void loop()
 }
 '''
 
-The voltage is read through an analog pin. The voltage is then mapped with a tranfer function acording to the data sheet. 
+The UV index is calculated by reading the voltage from the [sensor's] analog pin. Then, the voltage value linearly mapped to the correct UV index based off the graph in the sensor's datasheet. 
+![image](https://github.com/Naitry/UVBuddy/assets/124198528/a170f490-aa2f-482a-b860-27515e62f609)
 
-[ insert image of transfer function ]
-
-The data is then logged on an SD card using the SD library [link library here]. 
+The data of UV indexes at every 30 second time stepped is logged in an [SD card] using the [library].
 
 ## Results 
 (needs updating) See [Presentation](#presentation). 
